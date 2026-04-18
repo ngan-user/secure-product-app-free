@@ -15,7 +15,7 @@ RUN npm ci --omit=dev --audit \
 
 # Copy source
 COPY src/ ./src/
-COPY public/ ./public/ 2>/dev/null || true
+2>/dev/null || true
 
 # ============================================================
 # Stage 2: Production image
