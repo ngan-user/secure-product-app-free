@@ -1,11 +1,9 @@
-```js
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const path = require('path');
-
 const { logger } = require('./utils/logger');
 const productRoutes = require('./routes/products');
 const authRoutes = require('./routes/auth');
@@ -15,48 +13,41 @@ const { authenticateToken } = require('./middleware/auth');
 
 const app = express();
 
-// ================= SECURITY: HELMET =================
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',');
-
+// ✅ SECURITY: Helmet sets secure HTTP headers
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      
-      // ❌ BỎ unsafe-inline để chống XSS
-      scriptSrc: ["'self'"],
-
+      // ✅ Cho phép unsafe-inline để frontend SPA hoạt động
+      scriptSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
-
-      // ✅ Cho phép API nội bộ + origin frontend
-      connectSrc: ["'self'", ...allowedOrigins],
+      // ✅ Cho phép fetch API nội bộ
+      connectSrc: ["'self'"],
     },
   },
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-  },
-  referrerPolicy: { policy: "no-referrer" },
+  // ✅ HSTS: buộc dùng HTTPS trong 1 năm
+  hsts: { maxAge: 31536000, includeSubDomains: true },
 }));
 
-// ================= SECURITY: CORS =================
+// ✅ SECURITY: CORS - chỉ cho phép origin cụ thể
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',');
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error(`CORS blocked: ${origin}`));
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
 }));
 
-// ================= SECURITY: RATE LIMIT =================
+// ✅ SECURITY: Rate limiting - ngăn brute force / DDoS
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 100,
   message: { error: 'Too many requests, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -71,33 +62,30 @@ const authLimiter = rateLimit({
 app.use('/api/', limiter);
 app.use('/api/auth/', authLimiter);
 
-// ================= BODY PARSER =================
+// Body parser - giới hạn kích thước để chống DoS
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false, limit: '10kb' }));
 
-// ================= LOGGING =================
+// ✅ LOGGING: Morgan log HTTP requests
 app.use(morgan('combined', {
   stream: { write: (message) => logger.http(message.trim()) }
 }));
 
-// ================= STATIC FILES =================
+// Static files
 app.use(express.static(path.join(__dirname, '../public')));
 
-// ================= ROUTES =================
+// Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
-
-// 🔐 Protect product APIs with JWT
+// ✅ SECURITY: Tất cả product routes yêu cầu JWT token
 app.use('/api/products', authenticateToken, productRoutes);
 
-// ================= SPA FALLBACK =================
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
+// SPA fallback
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// ================= ERROR HANDLER =================
+// Error handler
 app.use(errorHandler);
 
 module.exports = app;
-```
