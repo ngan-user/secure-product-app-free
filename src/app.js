@@ -20,8 +20,8 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      // ✅ Cho phép unsafe-inline để frontend SPA hoạt động
-      scriptSrc: ["'self'", "'unsafe-inline'"],
+      // ✅ Cho phép unsafe-inline và unsafe-hashes để frontend SPA hoạt động
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-hashes'"],
       imgSrc: ["'self'", "data:", "https:"],
       // ✅ Cho phép fetch API nội bộ
       connectSrc: ["'self'"],
