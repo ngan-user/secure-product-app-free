@@ -1,0 +1,7 @@
+FROM mysql:8.0
+
+# Copy hardening config và init script
+COPY mysql/my.cnf /etc/mysql/conf.d/custom.cnf
+COPY mysql/init.sql /docker-entrypoint-initdb.d/init.sql
+
+EXPOSE 3306

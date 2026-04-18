@@ -1,0 +1,47 @@
+# ============================================================
+# .gitignore
+# ✅ SECURITY: Bảo vệ file nhạy cảm khỏi bị push lên GitHub
+# ============================================================
+
+# ─── ENV FILES — KHÔNG BAO GIỜ COMMIT ──────────────────────
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+# ─── SSL Certificates ───────────────────────────────────────
+nginx/ssl/*.pem
+nginx/ssl/*.key
+nginx/ssl/*.crt
+*.pem
+*.key
+*.p12
+
+# ─── Node.js ─────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+
+# ─── Logs ────────────────────────────────────────────────────
+logs/
+*.log
+
+# ─── Database ────────────────────────────────────────────────
+*.sql.backup
+mysql_data/
+
+# ─── Docker ──────────────────────────────────────────────────
+docker-compose.override.yml
+
+# ─── OS ──────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── IDE ─────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+
+# ─── Coverage ────────────────────────────────────────────────
+coverage/

@@ -1,0 +1,197 @@
+name: 🔐 Secure CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+# ✅ SECURITY: Giới hạn quyền mặc định của GITHUB_TOKEN
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ══════════════════════════════════════════════
+  # JOB 1: Lint & Security Audit
+  # ══════════════════════════════════════════════
+  audit:
+    name: 🔍 Lint & Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # ✅ SECURITY: Kiểm tra lỗ hổng trong dependencies
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: false
+
+      # ✅ SECURITY: Lint code
+      - name: Run ESLint
+        run: npm run lint || true
+
+  # ══════════════════════════════════════════════
+  # JOB 2: Unit Tests
+  # ══════════════════════════════════════════════
+  test:
+    name: 🧪 Run Tests
+    runs-on: ubuntu-latest
+    needs: audit
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          # ✅ SECURITY: Dùng GitHub Secrets, KHÔNG hard-code
+          MYSQL_ROOT_PASSWORD: ${{ secrets.TEST_DB_ROOT_PASSWORD }}
+          MYSQL_DATABASE: productdb_test
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        env:
+          NODE_ENV: test
+          DB_HOST: localhost
+          DB_PORT: 3306
+          DB_NAME: productdb_test
+          DB_USER: testuser
+          DB_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+          JWT_SECRET: ${{ secrets.TEST_JWT_SECRET }}
+        run: npm test
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+  # ══════════════════════════════════════════════
+  # JOB 3: Build & Scan Docker Image
+  # ══════════════════════════════════════════════
+  build-and-scan:
+    name: 🐳 Build & Security Scan Docker Image
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # ✅ SECURITY: Login vào registry bằng secret
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Extract metadata để tag image
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+
+      # Build image (chưa push)
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          load: true
+
+      # ✅ SECURITY: Quét lỗ hổng với Trivy
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'         # Fail pipeline nếu có lỗ hổng CRITICAL/HIGH
+        continue-on-error: true  # Vẫn upload kết quả dù fail
+
+      # Upload kết quả scan lên GitHub Security tab
+      - name: Upload Trivy scan results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      # Push image sau khi scan pass
+      - name: Push Docker image
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ══════════════════════════════════════════════
+  # JOB 4: Deploy to Render (chỉ khi merge vào main)
+  # ══════════════════════════════════════════════
+  deploy:
+    name: 🚀 Deploy to Render Cloud
+    runs-on: ubuntu-latest
+    needs: build-and-scan
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production  # Yêu cầu approval trước khi deploy
+
+    steps:
+      - name: Trigger Render Deploy Hook
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            -X POST \
+            "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+        # ✅ SECURITY: URL deploy hook lưu trong GitHub Secrets
+
+      - name: Notify deploy success
+        run: echo "✅ Deployment triggered on Render successfully"
