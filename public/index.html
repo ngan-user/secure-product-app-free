@@ -7,240 +7,120 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:        #0a0e1a;
-    --surface:   #111827;
-    --surface2:  #1a2235;
-    --border:    #1e2d45;
-    --accent:    #00d4ff;
-    --accent2:   #7c3aed;
-    --success:   #10b981;
-    --danger:    #ef4444;
-    --warn:      #f59e0b;
-    --text:      #e2e8f0;
-    --muted:     #64748b;
-    --font:      'Space Grotesk', sans-serif;
-    --mono:      'JetBrains Mono', monospace;
+    --bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--border:#1e2d45;
+    --accent:#00d4ff;--accent2:#7c3aed;--success:#10b981;--danger:#ef4444;
+    --warn:#f59e0b;--text:#e2e8f0;--muted:#64748b;
+    --font:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace;
   }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; }
-
-  /* ── Layout ── */
-  #app { display:flex; min-height:100vh; }
-  .sidebar {
-    width:240px; background:var(--surface); border-right:1px solid var(--border);
-    display:flex; flex-direction:column; padding:24px 0; position:fixed; height:100vh; z-index:100;
-  }
-  .main { margin-left:240px; flex:1; padding:32px; }
-
-  /* ── Sidebar ── */
-  .logo {
-    display:flex; align-items:center; gap:10px; padding:0 20px 28px;
-    border-bottom:1px solid var(--border);
-  }
-  .logo-icon {
-    width:36px; height:36px; background:linear-gradient(135deg,var(--accent),var(--accent2));
-    border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px;
-  }
-  .logo-text { font-size:17px; font-weight:700; letter-spacing:-0.5px; }
-  .logo-sub { font-size:10px; color:var(--muted); font-family:var(--mono); }
-  .nav { padding:16px 0; flex:1; }
-  .nav-item {
-    display:flex; align-items:center; gap:10px; padding:10px 20px; cursor:pointer;
-    color:var(--muted); font-size:14px; font-weight:500; transition:all .2s;
-    border-left:2px solid transparent; margin:2px 0;
-  }
-  .nav-item:hover { color:var(--text); background:var(--surface2); }
-  .nav-item.active { color:var(--accent); border-left-color:var(--accent); background:rgba(0,212,255,.06); }
-  .nav-item .icon { font-size:16px; width:20px; text-align:center; }
-  .sidebar-footer { padding:16px 20px; border-top:1px solid var(--border); }
-  .user-badge {
-    display:flex; align-items:center; gap:10px; padding:10px 12px;
-    background:var(--surface2); border-radius:10px; cursor:pointer;
-  }
-  .user-avatar {
-    width:32px; height:32px; border-radius:50%;
-    background:linear-gradient(135deg,var(--accent),var(--accent2));
-    display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600;
-  }
-  .user-name { font-size:13px; font-weight:600; }
-  .user-role { font-size:11px; color:var(--muted); }
-
-  /* ── Header ── */
-  .page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
-  .page-title { font-size:24px; font-weight:700; letter-spacing:-0.5px; }
-  .page-title span { color:var(--accent); }
-
-  /* ── Stats ── */
-  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
-  .stat-card {
-    background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px;
-    position:relative; overflow:hidden; transition:transform .2s, border-color .2s;
-  }
-  .stat-card:hover { transform:translateY(-2px); border-color:var(--accent); }
-  .stat-card::before {
-    content:''; position:absolute; top:0; right:0; width:80px; height:80px;
-    border-radius:50%; opacity:.08; transform:translate(20px,-20px);
-  }
-  .stat-card:nth-child(1)::before { background:var(--accent); }
-  .stat-card:nth-child(2)::before { background:var(--success); }
-  .stat-card:nth-child(3)::before { background:var(--warn); }
-  .stat-card:nth-child(4)::before { background:var(--accent2); }
-  .stat-label { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
-  .stat-value { font-size:28px; font-weight:700; font-family:var(--mono); }
-  .stat-change { font-size:12px; color:var(--success); margin-top:4px; }
-
-  /* ── Search & Actions ── */
-  .toolbar { display:flex; gap:12px; margin-bottom:20px; }
-  .search-box {
-    flex:1; background:var(--surface); border:1px solid var(--border); border-radius:10px;
-    padding:10px 16px 10px 40px; color:var(--text); font-size:14px; outline:none;
-    font-family:var(--font); position:relative; transition:border-color .2s;
-  }
-  .search-box:focus { border-color:var(--accent); }
-  .search-wrap { position:relative; flex:1; }
-  .search-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:14px; }
-  .btn {
-    padding:10px 20px; border-radius:10px; border:none; cursor:pointer;
-    font-family:var(--font); font-size:14px; font-weight:600; transition:all .2s; display:flex; align-items:center; gap:8px;
-  }
-  .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; }
-  .btn-primary:hover { opacity:.9; transform:translateY(-1px); box-shadow:0 4px 20px rgba(0,212,255,.3); }
-  .btn-ghost { background:var(--surface); border:1px solid var(--border); color:var(--text); }
-  .btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
-  .btn-danger { background:rgba(239,68,68,.15); border:1px solid rgba(239,68,68,.3); color:var(--danger); }
-  .btn-sm { padding:6px 12px; font-size:12px; }
-
-  /* ── Table ── */
-  .table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
-  table { width:100%; border-collapse:collapse; }
-  thead th {
-    padding:14px 16px; text-align:left; font-size:11px; font-weight:600;
-    text-transform:uppercase; letter-spacing:1px; color:var(--muted);
-    background:var(--surface2); border-bottom:1px solid var(--border);
-  }
-  tbody tr { border-bottom:1px solid var(--border); transition:background .15s; }
-  tbody tr:last-child { border-bottom:none; }
-  tbody tr:hover { background:rgba(0,212,255,.03); }
-  td { padding:14px 16px; font-size:14px; }
-  .product-name { font-weight:600; }
-  .product-id { font-family:var(--mono); font-size:12px; color:var(--muted); }
-
-  /* ── Badges ── */
-  .badge {
-    display:inline-flex; align-items:center; padding:4px 10px; border-radius:20px;
-    font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.5px;
-  }
-  .badge-blue   { background:rgba(0,212,255,.12); color:var(--accent); }
-  .badge-green  { background:rgba(16,185,129,.12); color:var(--success); }
-  .badge-red    { background:rgba(239,68,68,.12); color:var(--danger); }
-  .badge-yellow { background:rgba(245,158,11,.12); color:var(--warn); }
-  .badge-purple { background:rgba(124,58,237,.12); color:#a78bfa; }
-
-  /* ── Modal ── */
-  .modal-backdrop {
-    position:fixed; inset:0; background:rgba(0,0,0,.7); backdrop-filter:blur(4px);
-    z-index:200; display:flex; align-items:center; justify-content:center;
-    opacity:0; pointer-events:none; transition:opacity .2s;
-  }
-  .modal-backdrop.active { opacity:1; pointer-events:all; }
-  .modal {
-    background:var(--surface); border:1px solid var(--border); border-radius:16px;
-    width:520px; max-width:90vw; padding:28px; transform:translateY(12px); transition:transform .2s;
-  }
-  .modal-backdrop.active .modal { transform:translateY(0); }
-  .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
-  .modal-title { font-size:18px; font-weight:700; }
-  .close-btn { background:none; border:none; color:var(--muted); cursor:pointer; font-size:20px; padding:4px; }
-  .close-btn:hover { color:var(--text); }
-
-  /* ── Form ── */
-  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  .form-group { display:flex; flex-direction:column; gap:6px; }
-  .form-group.full { grid-column:1/-1; }
-  label { font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
-  input, select, textarea {
-    background:var(--surface2); border:1px solid var(--border); border-radius:8px;
-    padding:10px 12px; color:var(--text); font-size:14px; font-family:var(--font);
-    outline:none; transition:border-color .2s;
-  }
-  input:focus, select:focus, textarea:focus { border-color:var(--accent); }
-  textarea { resize:vertical; min-height:80px; }
-  select option { background:var(--surface); }
-  .form-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
-
-  /* ── Auth Screen ── */
-  #auth-screen {
-    position:fixed; inset:0; background:var(--bg); z-index:300;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .auth-card {
-    background:var(--surface); border:1px solid var(--border); border-radius:20px;
-    padding:40px; width:400px; max-width:90vw;
-  }
-  .auth-logo { text-align:center; margin-bottom:32px; }
-  .auth-logo-icon {
-    width:64px; height:64px; background:linear-gradient(135deg,var(--accent),var(--accent2));
-    border-radius:18px; margin:0 auto 12px; display:flex; align-items:center; justify-content:center;
-    font-size:28px;
-  }
-  .auth-title { font-size:24px; font-weight:700; letter-spacing:-0.5px; margin-bottom:4px; }
-  .auth-sub { color:var(--muted); font-size:14px; }
-  .auth-form { display:flex; flex-direction:column; gap:14px; margin-top:24px; }
-  .auth-form input { width:100%; }
-  .auth-btn { width:100%; padding:13px; font-size:15px; margin-top:6px; justify-content:center; }
-  .auth-hint { text-align:center; font-size:12px; color:var(--muted); margin-top:16px; }
-  .auth-hint span { color:var(--accent); font-family:var(--mono); }
-
-  /* ── Toast ── */
-  .toast-container { position:fixed; top:20px; right:20px; z-index:500; display:flex; flex-direction:column; gap:8px; }
-  .toast {
-    background:var(--surface); border:1px solid var(--border); border-radius:10px;
-    padding:12px 16px; font-size:13px; display:flex; align-items:center; gap:10px;
-    min-width:280px; box-shadow:0 8px 32px rgba(0,0,0,.4);
-    animation:slideIn .3s ease;
-  }
-  .toast.success { border-left:3px solid var(--success); }
-  .toast.error   { border-left:3px solid var(--danger); }
-  .toast.warn    { border-left:3px solid var(--warn); }
-  @keyframes slideIn { from { transform:translateX(100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
-
-  /* ── Loading ── */
-  .spinner {
-    width:18px; height:18px; border:2px solid var(--border);
-    border-top-color:var(--accent); border-radius:50%; animation:spin .6s linear infinite; display:inline-block;
-  }
-  @keyframes spin { to { transform:rotate(360deg); } }
-
-  /* ── Security Badge ── */
-  .sec-bar {
-    background:var(--surface2); border:1px solid var(--border); border-radius:10px;
-    padding:10px 16px; display:flex; gap:16px; align-items:center; margin-bottom:20px; flex-wrap:wrap;
-  }
-  .sec-item { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
-  .sec-item .dot { width:7px; height:7px; border-radius:50%; background:var(--success); }
-
-  /* ── Pagination ── */
-  .pagination { display:flex; justify-content:space-between; align-items:center; padding:14px 16px; border-top:1px solid var(--border); }
-  .pagination-info { font-size:13px; color:var(--muted); }
-  .pagination-btns { display:flex; gap:6px; }
-  .page-btn {
-    width:32px; height:32px; border-radius:6px; border:1px solid var(--border);
-    background:var(--surface); color:var(--text); cursor:pointer; font-size:13px;
-    display:flex; align-items:center; justify-content:center; transition:all .15s;
-  }
-  .page-btn:hover, .page-btn.active { background:var(--accent); border-color:var(--accent); color:#000; font-weight:700; }
-
-  /* ── Responsive ── */
-  @media (max-width:900px) {
-    .sidebar { transform:translateX(-100%); }
-    .main { margin-left:0; padding:16px; }
-    .stats-grid { grid-template-columns:1fr 1fr; }
-  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;}
+  #app{display:flex;min-height:100vh;}
+  .sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;position:fixed;height:100vh;z-index:100;}
+  .main{margin-left:240px;flex:1;padding:32px;}
+  .logo{display:flex;align-items:center;gap:10px;padding:0 20px 28px;border-bottom:1px solid var(--border);}
+  .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .logo-text{font-size:17px;font-weight:700;letter-spacing:-0.5px;}
+  .logo-sub{font-size:10px;color:var(--muted);font-family:var(--mono);}
+  .nav{padding:16px 0;flex:1;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:var(--muted);font-size:14px;font-weight:500;transition:all .2s;border-left:2px solid transparent;margin:2px 0;}
+  .nav-item:hover{color:var(--text);background:var(--surface2);}
+  .nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(0,212,255,.06);}
+  .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+  .sidebar-footer{padding:16px 20px;border-top:1px solid var(--border);}
+  .user-badge{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:10px;cursor:pointer;}
+  .user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;}
+  .user-name{font-size:13px;font-weight:600;}
+  .user-role{font-size:11px;color:var(--muted);}
+  .page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+  .page-title{font-size:24px;font-weight:700;letter-spacing:-0.5px;}
+  .page-title span{color:var(--accent);}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s;}
+  .stat-card:hover{transform:translateY(-2px);border-color:var(--accent);}
+  .stat-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;opacity:.08;transform:translate(20px,-20px);}
+  .stat-card:nth-child(1)::before{background:var(--accent);}
+  .stat-card:nth-child(2)::before{background:var(--success);}
+  .stat-card:nth-child(3)::before{background:var(--warn);}
+  .stat-card:nth-child(4)::before{background:var(--accent2);}
+  .stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+  .stat-value{font-size:28px;font-weight:700;font-family:var(--mono);}
+  .stat-change{font-size:12px;color:var(--success);margin-top:4px;}
+  .toolbar{display:flex;gap:12px;margin-bottom:20px;}
+  .search-box{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px 10px 40px;color:var(--text);font-size:14px;outline:none;font-family:var(--font);transition:border-color .2s;}
+  .search-box:focus{border-color:var(--accent);}
+  .search-wrap{position:relative;flex:1;}
+  .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;}
+  .btn{padding:10px 20px;border-radius:10px;border:none;cursor:pointer;font-family:var(--font);font-size:14px;font-weight:600;transition:all .2s;display:flex;align-items:center;gap:8px;}
+  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
+  .btn-primary:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,212,255,.3);}
+  .btn-ghost{background:var(--surface);border:1px solid var(--border);color:var(--text);}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+  .btn-danger{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:var(--danger);}
+  .btn-sm{padding:6px 12px;font-size:12px;}
+  .table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+  table{width:100%;border-collapse:collapse;}
+  thead th{padding:14px 16px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);background:var(--surface2);border-bottom:1px solid var(--border);}
+  tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+  tbody tr:last-child{border-bottom:none;}
+  tbody tr:hover{background:rgba(0,212,255,.03);}
+  td{padding:14px 16px;font-size:14px;}
+  .product-name{font-weight:600;}
+  .product-id{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+  .badge-blue{background:rgba(0,212,255,.12);color:var(--accent);}
+  .badge-green{background:rgba(16,185,129,.12);color:var(--success);}
+  .badge-red{background:rgba(239,68,68,.12);color:var(--danger);}
+  .badge-yellow{background:rgba(245,158,11,.12);color:var(--warn);}
+  .badge-purple{background:rgba(124,58,237,.12);color:#a78bfa;}
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+  .modal-backdrop.active{opacity:1;pointer-events:all;}
+  .modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:520px;max-width:90vw;padding:28px;transform:translateY(12px);transition:transform .2s;}
+  .modal-backdrop.active .modal{transform:translateY(0);}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+  .modal-title{font-size:18px;font-weight:700;}
+  .close-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;padding:4px;}
+  .close-btn:hover{color:var(--text);}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .form-group{display:flex;flex-direction:column;gap:6px;}
+  .form-group.full{grid-column:1/-1;}
+  label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+  input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;font-family:var(--font);outline:none;transition:border-color .2s;}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+  textarea{resize:vertical;min-height:80px;}
+  select option{background:var(--surface);}
+  .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+  #auth-screen{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;align-items:center;justify-content:center;}
+  .auth-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;width:400px;max-width:90vw;}
+  .auth-logo{text-align:center;margin-bottom:32px;}
+  .auth-logo-icon{width:64px;height:64px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:18px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;}
+  .auth-title{font-size:24px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px;}
+  .auth-sub{color:var(--muted);font-size:14px;}
+  .auth-form{display:flex;flex-direction:column;gap:14px;margin-top:24px;}
+  .auth-form input{width:100%;}
+  .auth-btn{width:100%;padding:13px;font-size:15px;margin-top:6px;justify-content:center;}
+  .auth-hint{text-align:center;font-size:12px;color:var(--muted);margin-top:16px;}
+  .auth-hint span{color:var(--accent);font-family:var(--mono);}
+  .toast-container{position:fixed;top:20px;right:20px;z-index:500;display:flex;flex-direction:column;gap:8px;}
+  .toast{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:13px;display:flex;align-items:center;gap:10px;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,.4);animation:slideIn .3s ease;}
+  .toast.success{border-left:3px solid var(--success);}
+  .toast.error{border-left:3px solid var(--danger);}
+  .toast.warn{border-left:3px solid var(--warn);}
+  @keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+  .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .sec-bar{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;display:flex;gap:16px;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+  .sec-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+  .sec-item .dot{width:7px;height:7px;border-radius:50%;background:var(--success);}
+  .pagination{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-top:1px solid var(--border);}
+  .pagination-info{font-size:13px;color:var(--muted);}
+  .pagination-btns{display:flex;gap:6px;}
+  .page-btn{width:32px;height:32px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+  .page-btn:hover,.page-btn.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700;}
+  @media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0;padding:16px}.stats-grid{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 
-<!-- ── Auth Screen ─────────────────────────────── -->
 <div id="auth-screen">
   <div class="auth-card">
     <div class="auth-logo">
@@ -258,19 +138,16 @@
         <input type="password" id="auth-password" placeholder="••••••••" value="Admin@12345">
       </div>
       <button class="btn btn-primary auth-btn" id="login-btn">
-      <span id="login-text">Đăng nhập</span>
+        <span id="login-text">Đăng nhập</span>
       </button>
     </div>
     <div class="auth-hint">Demo: <span>admin</span> / <span>Admin@12345</span></div>
   </div>
 </div>
 
-<!-- ── Toast Container ─────────────────────────── -->
 <div class="toast-container" id="toasts"></div>
 
-<!-- ── Main App ────────────────────────────────── -->
 <div id="app" style="display:none">
-  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="logo">
       <div class="logo-icon">🔐</div>
@@ -280,21 +157,13 @@
       </div>
     </div>
     <nav class="nav">
-      <div class="nav-item active" onclick="setPage('products')">
-        <span class="icon">📦</span> Sản phẩm
-      </div>
-      <div class="nav-item" onclick="setPage('security')">
-        <span class="icon">🛡️</span> Bảo mật
-      </div>
-      <div class="nav-item" onclick="setPage('monitoring')">
-        <span class="icon">📊</span> Monitoring
-      </div>
-      <div class="nav-item" onclick="setPage('logs')">
-        <span class="icon">📋</span> Audit Logs
-      </div>
+      <div class="nav-item active" data-page="products"><span class="icon">📦</span> Sản phẩm</div>
+      <div class="nav-item" data-page="security"><span class="icon">🛡️</span> Bảo mật</div>
+      <div class="nav-item" data-page="monitoring"><span class="icon">📊</span> Monitoring</div>
+      <div class="nav-item" data-page="logs"><span class="icon">📋</span> Audit Logs</div>
     </nav>
     <div class="sidebar-footer">
-      <div class="user-badge" onclick="logout()">
+      <div class="user-badge" id="logout-btn">
         <div class="user-avatar" id="user-avatar">A</div>
         <div>
           <div class="user-name" id="user-display">Admin</div>
@@ -304,22 +173,15 @@
     </div>
   </aside>
 
-  <!-- Main Content -->
   <main class="main">
-
-    <!-- ── Products Page ── -->
     <div id="page-products">
       <div class="page-header">
         <div>
           <div class="page-title">Quản lý <span>Sản phẩm</span></div>
           <div style="font-size:13px;color:var(--muted);margin-top:4px">Secure CRUD với JWT Auth & Input Validation</div>
         </div>
-        <button class="btn btn-primary" onclick="openModal()">
-          ＋ Thêm sản phẩm
-        </button>
+        <button class="btn btn-primary" id="btn-add-product">＋ Thêm sản phẩm</button>
       </div>
-
-      <!-- Security Status Bar -->
       <div class="sec-bar">
         <div class="sec-item"><span class="dot"></span> JWT Auth Active</div>
         <div class="sec-item"><span class="dot"></span> SQL Injection Protected</div>
@@ -328,57 +190,25 @@
         <div class="sec-item"><span class="dot"></span> HTTPS/TLS</div>
         <div class="sec-item"><span class="dot"></span> Helmet Headers</div>
       </div>
-
-      <!-- Stats -->
-      <div class="stats-grid" id="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Tổng sản phẩm</div>
-          <div class="stat-value" id="stat-total">—</div>
-          <div class="stat-change">↑ Cập nhật realtime</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Tổng giá trị kho</div>
-          <div class="stat-value" id="stat-value" style="font-size:18px">—</div>
-          <div class="stat-change">↑ Tổng stock × price</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Danh mục</div>
-          <div class="stat-value" id="stat-cats">—</div>
-          <div class="stat-change">↑ Phân loại sản phẩm</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Hết hàng</div>
-          <div class="stat-value" id="stat-zero" style="color:var(--warn)">—</div>
-          <div class="stat-change" style="color:var(--warn)">Cần nhập thêm</div>
-        </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Tổng sản phẩm</div><div class="stat-value" id="stat-total">—</div><div class="stat-change">↑ Cập nhật realtime</div></div>
+        <div class="stat-card"><div class="stat-label">Tổng giá trị kho</div><div class="stat-value" id="stat-value" style="font-size:18px">—</div><div class="stat-change">↑ Tổng stock × price</div></div>
+        <div class="stat-card"><div class="stat-label">Danh mục</div><div class="stat-value" id="stat-cats">—</div><div class="stat-change">↑ Phân loại sản phẩm</div></div>
+        <div class="stat-card"><div class="stat-label">Hết hàng</div><div class="stat-value" id="stat-zero" style="color:var(--warn)">—</div><div class="stat-change" style="color:var(--warn)">Cần nhập thêm</div></div>
       </div>
-
-      <!-- Toolbar -->
       <div class="toolbar">
         <div class="search-wrap">
           <span class="search-icon">🔍</span>
-          <input class="search-box" id="search-input" type="text" placeholder="Tìm kiếm theo tên hoặc danh mục..." oninput="searchProducts()">
+          <input class="search-box" id="search-input" type="text" placeholder="Tìm kiếm theo tên hoặc danh mục...">
         </div>
-        <select class="search-box" style="flex:none;width:160px" id="cat-filter" onchange="searchProducts()">
+        <select class="search-box" style="flex:none;width:160px" id="cat-filter">
           <option value="">Tất cả danh mục</option>
         </select>
-        <button class="btn btn-ghost" onclick="loadProducts()">↻ Tải lại</button>
+        <button class="btn btn-ghost" id="btn-reload">↻ Tải lại</button>
       </div>
-
-      <!-- Table -->
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Tên sản phẩm</th>
-              <th>Danh mục</th>
-              <th>Giá</th>
-              <th>Tồn kho</th>
-              <th>Trạng thái</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
+          <thead><tr><th>ID</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Giá</th><th>Tồn kho</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
           <tbody id="product-tbody">
             <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)"><div class="spinner"></div></td></tr>
           </tbody>
@@ -390,536 +220,343 @@
       </div>
     </div>
 
-    <!-- ── Security Page ── -->
     <div id="page-security" style="display:none">
-      <div class="page-header">
-        <div>
-          <div class="page-title">Cấu hình <span>Bảo mật</span></div>
-          <div style="font-size:13px;color:var(--muted);margin-top:4px">5 lớp bảo mật theo yêu cầu đồ án</div>
-        </div>
-      </div>
+      <div class="page-header"><div><div class="page-title">Cấu hình <span>Bảo mật</span></div><div style="font-size:13px;color:var(--muted);margin-top:4px">5 lớp bảo mật theo yêu cầu đồ án</div></div></div>
       <div id="security-content"></div>
     </div>
 
-    <!-- ── Monitoring Page ── -->
     <div id="page-monitoring" style="display:none">
       <div class="page-header">
-        <div>
-          <div class="page-title">System <span>Monitoring</span></div>
-          <div style="font-size:13px;color:var(--muted);margin-top:4px">Prometheus + Grafana metrics</div>
-        </div>
-        <button class="btn btn-ghost" onclick="loadMonitoring()">↻ Refresh</button>
+        <div><div class="page-title">System <span>Monitoring</span></div><div style="font-size:13px;color:var(--muted);margin-top:4px">Prometheus + Grafana metrics</div></div>
+        <button class="btn btn-ghost" id="btn-refresh-monitor">↻ Refresh</button>
       </div>
       <div id="monitoring-content"></div>
     </div>
 
-    <!-- ── Logs Page ── -->
     <div id="page-logs" style="display:none">
-      <div class="page-header">
-        <div>
-          <div class="page-title">Audit <span>Logs</span></div>
-          <div style="font-size:13px;color:var(--muted);margin-top:4px">Ghi nhật ký mọi thao tác hệ thống</div>
-        </div>
-      </div>
+      <div class="page-header"><div><div class="page-title">Audit <span>Logs</span></div><div style="font-size:13px;color:var(--muted);margin-top:4px">Ghi nhật ký mọi thao tác hệ thống</div></div></div>
       <div id="logs-content"></div>
     </div>
-
   </main>
 </div>
 
-<!-- ── Add/Edit Product Modal ── -->
 <div class="modal-backdrop" id="product-modal">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="modal-title">Thêm sản phẩm mới</div>
-      <button class="close-btn" onclick="closeModal()">✕</button>
+      <button class="close-btn" id="btn-close-modal">✕</button>
     </div>
     <div class="form-grid">
       <input type="hidden" id="edit-id">
-      <div class="form-group full">
-        <label>Tên sản phẩm *</label>
-        <input type="text" id="f-name" placeholder="VD: Laptop Dell XPS 15" maxlength="200">
-      </div>
-      <div class="form-group">
-        <label>Giá (VND) *</label>
-        <input type="number" id="f-price" placeholder="35000000" min="0" step="1000">
-      </div>
-      <div class="form-group">
-        <label>Tồn kho *</label>
-        <input type="number" id="f-stock" placeholder="10" min="0">
-      </div>
+      <div class="form-group full"><label>Tên sản phẩm *</label><input type="text" id="f-name" placeholder="VD: Laptop Dell XPS 15" maxlength="200"></div>
+      <div class="form-group"><label>Giá (VND) *</label><input type="number" id="f-price" placeholder="35000000" min="0" step="1000"></div>
+      <div class="form-group"><label>Tồn kho *</label><input type="number" id="f-stock" placeholder="10" min="0"></div>
       <div class="form-group full">
         <label>Danh mục *</label>
         <select id="f-category">
           <option value="">-- Chọn danh mục --</option>
-          <option>Laptop</option>
-          <option>Điện thoại</option>
-          <option>TV</option>
-          <option>Phụ kiện</option>
-          <option>Máy tính bảng</option>
-          <option>Máy tính để bàn</option>
-          <option>Khác</option>
+          <option>Laptop</option><option>Điện thoại</option><option>TV</option>
+          <option>Phụ kiện</option><option>Máy tính bảng</option><option>Máy tính để bàn</option><option>Khác</option>
         </select>
       </div>
-      <div class="form-group full">
-        <label>Mô tả</label>
-        <textarea id="f-desc" placeholder="Mô tả chi tiết sản phẩm..." maxlength="1000"></textarea>
-      </div>
+      <div class="form-group full"><label>Mô tả</label><textarea id="f-desc" placeholder="Mô tả chi tiết..." maxlength="1000"></textarea></div>
     </div>
     <div class="form-actions">
-      <button class="btn btn-ghost" onclick="closeModal()">Hủy</button>
-      <button class="btn btn-primary" id="save-btn" onclick="saveProduct()">💾 Lưu sản phẩm</button>
+      <button class="btn btn-ghost" id="btn-cancel-modal">Hủy</button>
+      <button class="btn btn-primary" id="save-btn">💾 Lưu sản phẩm</button>
     </div>
   </div>
 </div>
 
 <script>
-// ════════════════════════════════════════════════════
-// STATE
-// ════════════════════════════════════════════════════
 const API = '/api';
 let token = localStorage.getItem('token');
 let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
 let products = [];
 let currentPage = 1;
-let totalPages = 1;
 let searchTimer;
 
-// ════════════════════════════════════════════════════
-// AUTH
-// ════════════════════════════════════════════════════
+// ── Helpers ──
+function fmt(n) { return new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(n); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(msg, type='success') {
+  const icons = {success:'✅',error:'❌',warn:'⚠️'};
+  const el = document.createElement('div');
+  el.className = 'toast '+type;
+  el.innerHTML = '<span>'+icons[type]+'</span><span>'+msg+'</span>';
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ── Auth ──
 async function login() {
   const username = document.getElementById('auth-username').value.trim();
   const password = document.getElementById('auth-password').value;
-  if (!username || !password) { toast('Vui lòng điền đầy đủ thông tin', 'warn'); return; }
-
+  if (!username || !password) { toast('Vui lòng điền đầy đủ thông tin','warn'); return; }
   const btn = document.getElementById('login-btn');
   btn.disabled = true;
-  document.getElementById('login-text').innerHTML = '<span class="spinner"></span> Đang đăng nhập...';
-
+  document.getElementById('login-text').textContent = 'Đang đăng nhập...';
   try {
-    const res = await fetch(`${API}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
+    const res = await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Đăng nhập thất bại');
-
-    token = data.token;
-    currentUser = data.user;
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(currentUser));
-
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
-    document.getElementById('user-display').textContent = currentUser.username;
-    document.getElementById('user-role-display').textContent = currentUser.role;
-    document.getElementById('user-avatar').textContent = currentUser.username[0].toUpperCase();
-
-    toast(`Xin chào, ${currentUser.username}! 👋`, 'success');
+    if (!res.ok) throw new Error(data.error||'Đăng nhập thất bại');
+    token = data.token; currentUser = data.user;
+    localStorage.setItem('token',token);
+    localStorage.setItem('user',JSON.stringify(currentUser));
+    showApp();
+    toast('Xin chào, '+currentUser.username+'! 👋','success');
     loadProducts();
-  } catch (e) {
-    toast(e.message, 'error');
-  } finally {
-    btn.disabled = false;
-    document.getElementById('login-text').textContent = 'Đăng nhập';
-  }
+  } catch(e) { toast(e.message,'error'); }
+  finally { btn.disabled=false; document.getElementById('login-text').textContent='Đăng nhập'; }
+}
+
+function showApp() {
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('user-display').textContent=currentUser.username;
+  document.getElementById('user-role-display').textContent=currentUser.role;
+  document.getElementById('user-avatar').textContent=currentUser.username[0].toUpperCase();
 }
 
 function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  token = null; currentUser = null;
-  document.getElementById('auth-screen').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
-  toast('Đã đăng xuất', 'warn');
+  localStorage.removeItem('token'); localStorage.removeItem('user');
+  token=null; currentUser=null;
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  toast('Đã đăng xuất','warn');
 }
 
-// Auto-init nếu đã có token
-window.addEventListener('DOMContentLoaded', () => {
-  if (token && currentUser) {
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
-    document.getElementById('user-display').textContent = currentUser.username;
-    document.getElementById('user-role-display').textContent = currentUser.role;
-    document.getElementById('user-avatar').textContent = currentUser.username[0].toUpperCase();
-    loadProducts();
-  }
-  // Enter key for login
-  document.getElementById('login-btn').addEventListener('click', login);
-  document.getElementById('auth-password').addEventListener('keydown', e => { if(e.key==='Enter') login(); });
-  renderSecurityPage();
-  renderMonitoringPage();
-  renderLogsPage();
-});
-
-// ════════════════════════════════════════════════════
-// API HELPER
-// ════════════════════════════════════════════════════
-async function api(path, opts = {}) {
-  const res = await fetch(`${API}${path}`, {
-    ...opts,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-      ...(opts.headers || {}),
-    },
-  });
-  if (res.status === 401) { logout(); return null; }
+// ── API helper ──
+async function apiCall(path, opts={}) {
+  const res = await fetch(API+path,{...opts,headers:{'Content-Type':'application/json','Authorization':'Bearer '+token,...(opts.headers||{})}});
+  if (res.status===401) { logout(); return null; }
   return res;
 }
 
-// ════════════════════════════════════════════════════
-// PRODUCTS
-// ════════════════════════════════════════════════════
-async function loadProducts(page = 1) {
-  currentPage = page;
-  const search = document.getElementById('search-input')?.value || '';
-  const cat    = document.getElementById('cat-filter')?.value || '';
-
-  const params = new URLSearchParams({ page, limit: 8, ...(search && { search }), ...(cat && { search: cat }) });
-  const res = await api(`/products?${params}`);
+// ── Products ──
+async function loadProducts(page=1) {
+  currentPage=page;
+  const search = document.getElementById('search-input').value||'';
+  const cat = document.getElementById('cat-filter').value||'';
+  const params = new URLSearchParams({page,limit:8});
+  if (search) params.set('search',search);
+  const res = await apiCall('/products?'+params);
   if (!res) return;
   const data = await res.json();
-
-  products = data.products || [];
-  totalPages = data.pages || 1;
-
+  products = data.products||[];
   renderTable();
-  renderPagination(data.total, data.page, data.pages);
-  updateStats(data.products, data.total);
+  renderPagination(data.total,data.page,data.pages);
+  updateStats(data.products,data.total);
   populateCatFilter(data.products);
 }
 
 function renderTable() {
   const tbody = document.getElementById('product-tbody');
-  if (products.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:48px;color:var(--muted)">
-      <div style="font-size:32px;margin-bottom:8px">📦</div>
-      Không có sản phẩm nào
-    </td></tr>`;
+  if (!products.length) {
+    tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:48px;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">📦</div>Không có sản phẩm nào</td></tr>';
     return;
   }
+  tbody.innerHTML = products.map(p =>
+    '<tr>'+
+    '<td><span class="product-id">#'+p.id+'</span></td>'+
+    '<td><div class="product-name">'+esc(p.name)+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">'+esc((p.description||'').slice(0,60))+'</div></td>'+
+    '<td><span class="badge badge-blue">'+esc(p.category)+'</span></td>'+
+    '<td style="font-family:var(--mono);font-weight:600">'+fmt(p.price)+'</td>'+
+    '<td><span class="badge '+(p.stock===0?'badge-red':p.stock<5?'badge-yellow':'badge-green')+'">'+p.stock+' sp</span></td>'+
+    '<td><span class="badge '+(p.stock>0?'badge-green':'badge-red')+'">'+(p.stock>0?'Còn hàng':'Hết hàng')+'</span></td>'+
+    '<td><div style="display:flex;gap:6px">'+
+    '<button class="btn btn-ghost btn-sm" data-edit="'+p.id+'">✏️ Sửa</button>'+
+    '<button class="btn btn-danger btn-sm" data-delete="'+p.id+'" data-name="'+esc(p.name)+'">🗑</button>'+
+    '</div></td>'+
+    '</tr>'
+  ).join('');
 
-  tbody.innerHTML = products.map(p => `
-    <tr>
-      <td><span class="product-id">#${p.id}</span></td>
-      <td>
-        <div class="product-name">${esc(p.name)}</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">${esc(p.description||'').slice(0,60)}</div>
-      </td>
-      <td><span class="badge badge-blue">${esc(p.category)}</span></td>
-      <td style="font-family:var(--mono);font-weight:600">${fmt(p.price)}</td>
-      <td>
-        <span class="badge ${p.stock===0?'badge-red':p.stock<5?'badge-yellow':'badge-green'}">
-          ${p.stock} sp
-        </span>
-      </td>
-      <td><span class="badge ${p.stock>0?'badge-green':'badge-red'}">${p.stock>0?'Còn hàng':'Hết hàng'}</span></td>
-      <td>
-        <div style="display:flex;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick="editProduct(${p.id})">✏️ Sửa</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteProduct(${p.id},'${esc(p.name)}')">🗑</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
+  // Gắn event cho các nút sửa/xóa
+  tbody.querySelectorAll('[data-edit]').forEach(btn => {
+    btn.addEventListener('click', function() { editProduct(this.dataset.edit); });
+  });
+  tbody.querySelectorAll('[data-delete]').forEach(btn => {
+    btn.addEventListener('click', function() { deleteProduct(this.dataset.delete, this.dataset.name); });
+  });
 }
 
-function renderPagination(total, page, pages) {
-  document.getElementById('page-info').textContent = `${total} sản phẩm — trang ${page}/${pages}`;
+function renderPagination(total,page,pages) {
+  document.getElementById('page-info').textContent = total+' sản phẩm — trang '+page+'/'+(pages||1);
   const btns = document.getElementById('page-btns');
-  if (pages <= 1) { btns.innerHTML = ''; return; }
-  let html = `<button class="page-btn" onclick="loadProducts(${page-1})" ${page===1?'disabled':''}>‹</button>`;
-  for (let i = 1; i <= pages; i++) {
-    html += `<button class="page-btn ${i===page?'active':''}" onclick="loadProducts(${i})">${i}</button>`;
-  }
-  html += `<button class="page-btn" onclick="loadProducts(${page+1})" ${page===pages?'disabled':''}>›</button>`;
-  btns.innerHTML = html;
+  if (!pages||pages<=1) { btns.innerHTML=''; return; }
+  let html = '<button class="page-btn" data-p="'+(page-1)+'" '+(page===1?'disabled':'')+'>‹</button>';
+  for (let i=1;i<=pages;i++) html+='<button class="page-btn'+(i===page?' active':'')+'" data-p="'+i+'">'+i+'</button>';
+  html += '<button class="page-btn" data-p="'+(page+1)+'" '+(page===pages?'disabled':'')+'>›</button>';
+  btns.innerHTML=html;
+  btns.querySelectorAll('[data-p]').forEach(btn => {
+    btn.addEventListener('click', function() { if (!this.disabled) loadProducts(parseInt(this.dataset.p)); });
+  });
 }
 
-function updateStats(prods, total) {
-  document.getElementById('stat-total').textContent = total;
-  const totalVal = prods.reduce((s,p) => s + p.price * p.stock, 0);
-  document.getElementById('stat-value').textContent = fmt(totalVal);
-  const cats = new Set(prods.map(p => p.category)).size;
-  document.getElementById('stat-cats').textContent = cats;
-  const zero = prods.filter(p => p.stock === 0).length;
-  document.getElementById('stat-zero').textContent = zero;
+function updateStats(prods,total) {
+  document.getElementById('stat-total').textContent=total;
+  document.getElementById('stat-value').textContent=fmt(prods.reduce((s,p)=>s+p.price*p.stock,0));
+  document.getElementById('stat-cats').textContent=new Set(prods.map(p=>p.category)).size;
+  document.getElementById('stat-zero').textContent=prods.filter(p=>p.stock===0).length;
 }
 
 function populateCatFilter(prods) {
-  const sel = document.getElementById('cat-filter');
-  const cats = [...new Set(prods.map(p => p.category))];
-  const current = sel.value;
-  const opts = cats.map(c => `<option value="${c}" ${c===current?'selected':''}>${c}</option>`).join('');
-  sel.innerHTML = `<option value="">Tất cả danh mục</option>${opts}`;
+  const sel=document.getElementById('cat-filter');
+  const cur=sel.value;
+  const cats=[...new Set(prods.map(p=>p.category))];
+  sel.innerHTML='<option value="">Tất cả danh mục</option>'+cats.map(c=>'<option value="'+c+'"'+(c===cur?' selected':'')+'>'+c+'</option>').join('');
 }
 
-function searchProducts() {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => loadProducts(1), 300);
-}
-
-// ════════════════════════════════════════════════════
-// CRUD MODAL
-// ════════════════════════════════════════════════════
-function openModal(product = null) {
-  document.getElementById('edit-id').value = product?.id || '';
-  document.getElementById('modal-title').textContent = product ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới';
-  document.getElementById('f-name').value    = product?.name || '';
-  document.getElementById('f-price').value   = product?.price || '';
-  document.getElementById('f-stock').value   = product?.stock ?? '';
-  document.getElementById('f-category').value = product?.category || '';
-  document.getElementById('f-desc').value    = product?.description || '';
+// ── Modal ──
+function openModal(product=null) {
+  document.getElementById('edit-id').value=product?.id||'';
+  document.getElementById('modal-title').textContent=product?'Chỉnh sửa sản phẩm':'Thêm sản phẩm mới';
+  document.getElementById('f-name').value=product?.name||'';
+  document.getElementById('f-price').value=product?.price||'';
+  document.getElementById('f-stock').value=product?.stock??'';
+  document.getElementById('f-category').value=product?.category||'';
+  document.getElementById('f-desc').value=product?.description||'';
   document.getElementById('product-modal').classList.add('active');
 }
-
-function closeModal() {
-  document.getElementById('product-modal').classList.remove('active');
-}
+function closeModal() { document.getElementById('product-modal').classList.remove('active'); }
 
 async function editProduct(id) {
-  const res = await api(`/products/${id}`);
+  const res = await apiCall('/products/'+id);
   if (!res) return;
-  const p = await res.json();
-  openModal(p);
+  openModal(await res.json());
 }
 
 async function saveProduct() {
   const id = document.getElementById('edit-id').value;
   const body = {
-    name:        document.getElementById('f-name').value.trim(),
-    price:       parseFloat(document.getElementById('f-price').value),
-    stock:       parseInt(document.getElementById('f-stock').value),
-    category:    document.getElementById('f-category').value,
+    name: document.getElementById('f-name').value.trim(),
+    price: parseFloat(document.getElementById('f-price').value),
+    stock: parseInt(document.getElementById('f-stock').value),
+    category: document.getElementById('f-category').value,
     description: document.getElementById('f-desc').value.trim(),
   };
-
-  if (!body.name || !body.category || isNaN(body.price) || isNaN(body.stock)) {
-    toast('Vui lòng điền đầy đủ thông tin bắt buộc', 'warn'); return;
-  }
-
-  const btn = document.getElementById('save-btn');
-  btn.disabled = true; btn.textContent = 'Đang lưu...';
-
+  if (!body.name||!body.category||isNaN(body.price)||isNaN(body.stock)) { toast('Vui lòng điền đầy đủ thông tin','warn'); return; }
+  const btn=document.getElementById('save-btn');
+  btn.disabled=true; btn.textContent='Đang lưu...';
   try {
-    const res = await api(id ? `/products/${id}` : '/products', {
-      method: id ? 'PUT' : 'POST',
-      body: JSON.stringify(body),
-    });
+    const res = await apiCall(id?'/products/'+id:'/products',{method:id?'PUT':'POST',body:JSON.stringify(body)});
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
-    toast(id ? '✅ Cập nhật sản phẩm thành công' : '✅ Thêm sản phẩm thành công', 'success');
-    closeModal();
-    loadProducts(currentPage);
-  } catch (e) {
-    toast(e.message, 'error');
-  } finally {
-    btn.disabled = false; btn.textContent = '💾 Lưu sản phẩm';
-  }
+    toast(id?'✅ Cập nhật thành công':'✅ Thêm thành công','success');
+    closeModal(); loadProducts(currentPage);
+  } catch(e) { toast(e.message,'error'); }
+  finally { btn.disabled=false; btn.textContent='💾 Lưu sản phẩm'; }
 }
 
-async function deleteProduct(id, name) {
-  if (!confirm(`Xác nhận xóa sản phẩm:\n"${name}"?`)) return;
-  const res = await api(`/products/${id}`, { method: 'DELETE' });
+async function deleteProduct(id,name) {
+  if (!confirm('Xác nhận xóa sản phẩm:\n"'+name+'"?')) return;
+  const res = await apiCall('/products/'+id,{method:'DELETE'});
   if (!res) return;
   const data = await res.json();
-  if (res.ok) { toast('🗑️ Đã xóa sản phẩm', 'warn'); loadProducts(currentPage); }
-  else toast(data.error, 'error');
+  if (res.ok) { toast('🗑️ Đã xóa sản phẩm','warn'); loadProducts(currentPage); }
+  else toast(data.error,'error');
 }
 
-// ════════════════════════════════════════════════════
-// PAGES
-// ════════════════════════════════════════════════════
+// ── Pages ──
 function setPage(page) {
   ['products','security','monitoring','logs'].forEach(p => {
-    document.getElementById(`page-${p}`).style.display = p===page ? 'block' : 'none';
+    document.getElementById('page-'+p).style.display=p===page?'block':'none';
   });
-  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.querySelector('[data-page="'+page+'"]').classList.add('active');
 }
 
 function renderSecurityPage() {
-  const layers = [
-    { icon:'🐳', title:'Secure Docker Configuration', color:'badge-blue', items:[
-      '✅ Non-root user (appuser:1001) — ngăn chiếm quyền container',
-      '✅ Multi-stage build với node:20-alpine — giảm attack surface',
-      '✅ read_only: true filesystem trong docker-compose',
-      '✅ cap_drop: ALL — bỏ toàn bộ Linux capabilities',
-      '✅ no-new-privileges: true — ngăn privilege escalation',
-      '✅ Giới hạn CPU 0.5 core, RAM 256MB',
-      '✅ Network isolation: frontend_net / backend_net (internal)',
-      '✅ Không expose port MySQL ra host',
-    ]},
-    { icon:'🔑', title:'Environment Variable Protection', color:'badge-purple', items:[
-      '✅ Không hard-code secret trong source code',
-      '✅ File .env được thêm vào .gitignore',
-      '✅ .env.example cung cấp template không chứa giá trị thật',
-      '✅ JWT_SECRET generate ngẫu nhiên bằng openssl rand',
-      '✅ GitHub Secrets cho CI/CD pipeline',
-      '✅ Render Dashboard secrets cho production',
-      '✅ Logger redact các field nhạy cảm (password, token, key)',
-    ]},
-    { icon:'🗄️', title:'Database Security (MySQL Hardening)', color:'badge-green', items:[
-      '✅ Tắt remote root login (chỉ localhost)',
-      '✅ Xóa anonymous user khi khởi tạo',
-      '✅ User appuser chỉ có quyền SELECT/INSERT/UPDATE (least privilege)',
-      '✅ multipleStatements: false — ngăn SQL Injection',
-      '✅ Parameterized queries toàn bộ code',
-      '✅ Input validation + escape trước khi query',
-      '✅ local_infile=0 — tắt LOAD DATA LOCAL INFILE',
-      '✅ symbolic_links=0 — ngăn symlink attack',
-      '✅ General log + Slow query log được bật',
-    ]},
-    { icon:'⚙️', title:'CI/CD Bảo mật (GitHub Actions)', color:'badge-yellow', items:[
-      '✅ permissions: contents: read (quyền tối thiểu)',
-      '✅ npm audit --audit-level=high trong pipeline',
-      '✅ Trivy vulnerability scanner quét Docker image',
-      '✅ Kết quả scan upload lên GitHub Security tab',
-      '✅ Secrets lưu trong GitHub Secrets, không hard-code',
-      '✅ Deploy chỉ khi push vào branch main',
-      '✅ environment: production yêu cầu approval',
-      '✅ Docker image push chỉ sau khi test pass',
-    ]},
-    { icon:'📊', title:'Logging & Monitoring', color:'badge-red', items:[
-      '✅ Winston logger: app.log + error.log',
-      '✅ Morgan HTTP request logging',
-      '✅ Ghi log: login thành công/thất bại, IP, user ID',
-      '✅ Ghi log: mọi thao tác CRUD với sản phẩm',
-      '✅ Prometheus scrape metrics mỗi 15 giây',
-      '✅ Grafana dashboard visualization',
-      '✅ Alert rules: App Down, High CPU, High Error Rate',
-      '✅ Health check endpoint /api/health',
-    ]},
+  const layers=[
+    {icon:'🐳',title:'Secure Docker Configuration',color:'badge-blue',items:['✅ Non-root user (appuser:1001) — ngăn chiếm quyền container','✅ Multi-stage build với node:20-alpine — giảm attack surface','✅ read_only: true filesystem trong docker-compose','✅ cap_drop: ALL — bỏ toàn bộ Linux capabilities','✅ no-new-privileges: true — ngăn privilege escalation','✅ Giới hạn CPU 0.5 core, RAM 256MB','✅ Network isolation: frontend_net / backend_net (internal)','✅ Không expose port MySQL ra host']},
+    {icon:'🔑',title:'Environment Variable Protection',color:'badge-purple',items:['✅ Không hard-code secret trong source code','✅ File .env được thêm vào .gitignore','✅ .env.example cung cấp template không chứa giá trị thật','✅ JWT_SECRET generate ngẫu nhiên bằng openssl rand','✅ GitHub Secrets cho CI/CD pipeline','✅ Render Dashboard secrets cho production','✅ Logger redact các field nhạy cảm (password, token, key)']},
+    {icon:'🗄️',title:'Database Security (PostgreSQL Hardening)',color:'badge-green',items:['✅ Tắt remote root login','✅ User appuser chỉ có quyền SELECT/INSERT/UPDATE','✅ Parameterized queries — ngăn SQL Injection','✅ Input validation + escape trước khi query','✅ SSL kết nối DB trên production','✅ Soft delete — không xóa vĩnh viễn','✅ Audit log ghi lại mọi thay đổi','✅ Connection pooling với timeout']},
+    {icon:'⚙️',title:'CI/CD Bảo mật (GitHub Actions)',color:'badge-yellow',items:['✅ permissions: contents: read (quyền tối thiểu)','✅ npm audit --audit-level=high trong pipeline','✅ Trivy vulnerability scanner quét Docker image','✅ Kết quả scan upload lên GitHub Security tab','✅ Secrets lưu trong GitHub Secrets, không hard-code','✅ Deploy chỉ khi push vào branch main','✅ environment: production yêu cầu approval','✅ Docker image push chỉ sau khi test pass']},
+    {icon:'📊',title:'Logging & Monitoring',color:'badge-red',items:['✅ Winston logger: app.log + error.log','✅ Morgan HTTP request logging','✅ Ghi log: login thành công/thất bại, IP, user ID','✅ Ghi log: mọi thao tác CRUD với sản phẩm','✅ Prometheus scrape metrics mỗi 15 giây','✅ Grafana dashboard visualization','✅ Alert rules: App Down, High CPU, High Error Rate','✅ Health check endpoint /api/health']},
   ];
-
-  document.getElementById('security-content').innerHTML = layers.map(l => `
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
-        <span style="font-size:24px">${l.icon}</span>
-        <div>
-          <div style="font-weight:700;font-size:16px">${l.title}</div>
-          <span class="badge ${l.color}" style="margin-top:4px">Layer ${layers.indexOf(l)+1}</span>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        ${l.items.map(i=>`<div style="font-size:13px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border)">${i}</div>`).join('')}
-      </div>
-    </div>
-  `).join('');
+  document.getElementById('security-content').innerHTML=layers.map((l,i)=>
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px">'+
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">'+
+    '<span style="font-size:24px">'+l.icon+'</span>'+
+    '<div><div style="font-weight:700;font-size:16px">'+l.title+'</div>'+
+    '<span class="badge '+l.color+'" style="margin-top:4px">Layer '+(i+1)+'</span></div></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+
+    l.items.map(item=>'<div style="font-size:13px;color:var(--muted);padding:6px 0;border-bottom:1px solid var(--border)">'+item+'</div>').join('')+
+    '</div></div>'
+  ).join('');
 }
 
 function renderMonitoringPage() {
-  document.getElementById('monitoring-content').innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px">
-        <div style="font-weight:700;margin-bottom:4px">📡 Prometheus</div>
-        <div style="color:var(--muted);font-size:13px;margin-bottom:12px">Metrics collection & alerting</div>
-        <div class="badge badge-green" style="margin-bottom:12px">● Running on :9090</div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.8">
-          • scrape_interval: 15s<br>
-          • Jobs: nodejs-app, nginx, mysql<br>
-          • Alert rules: 7 rules<br>
-          • Retention: 15 days
-        </div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px">
-        <div style="font-weight:700;margin-bottom:4px">📊 Grafana</div>
-        <div style="color:var(--muted);font-size:13px;margin-bottom:12px">Visualization dashboard</div>
-        <div class="badge badge-green" style="margin-bottom:12px">● Running on /grafana</div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.8">
-          • Anonymous login: disabled<br>
-          • Data source: Prometheus<br>
-          • Dashboards: App + MySQL<br>
-          • Alerts via webhook
-        </div>
-      </div>
-    </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px">
-      <div style="font-weight:700;margin-bottom:16px">🚨 Alert Rules đang cấu hình</div>
-      <table style="width:100%;border-collapse:collapse">
-        <thead><tr>
-          <th style="text-align:left;padding:8px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">Alert</th>
-          <th style="text-align:left;padding:8px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">Điều kiện</th>
-          <th style="text-align:left;padding:8px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">Severity</th>
-        </tr></thead>
-        <tbody>
-          ${[
-            ['AppDown','up{job="nodejs-app"} == 0 for 1m','🔴 Critical'],
-            ['HighCPUUsage','CPU > 80% for 5m','🟡 Warning'],
-            ['HighMemoryUsage','Memory > 200MB for 5m','🟡 Warning'],
-            ['HighErrorRate','5xx rate > 10% for 2m','🔴 Critical'],
-            ['SlowResponseTime','p95 latency > 2s for 5m','🟡 Warning'],
-            ['MySQLDown','mysql_up == 0 for 1m','🔴 Critical'],
-            ['TooManyConnections','threads_connected > 80','🟡 Warning'],
-          ].map(([a,c,s])=>`<tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:10px 8px;font-weight:600;font-size:13px">${a}</td>
-            <td style="padding:10px 8px;font-size:12px;font-family:var(--mono);color:var(--muted)">${c}</td>
-            <td style="padding:10px 8px;font-size:12px">${s}</td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>`;
+  document.getElementById('monitoring-content').innerHTML=
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">'+
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px"><div style="font-weight:700;margin-bottom:4px">📡 Prometheus</div><div style="color:var(--muted);font-size:13px;margin-bottom:12px">Metrics collection & alerting</div><div class="badge badge-green" style="margin-bottom:12px">● Running on :9090</div><div style="font-size:12px;color:var(--muted);line-height:1.8">• scrape_interval: 15s<br>• Jobs: nodejs-app, nginx, mysql<br>• Alert rules: 7 rules<br>• Retention: 15 days</div></div>'+
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px"><div style="font-weight:700;margin-bottom:4px">📊 Grafana</div><div style="color:var(--muted);font-size:13px;margin-bottom:12px">Visualization dashboard</div><div class="badge badge-green" style="margin-bottom:12px">● Running on /grafana</div><div style="font-size:12px;color:var(--muted);line-height:1.8">• Anonymous login: disabled<br>• Data source: Prometheus<br>• Dashboards: App + MySQL<br>• Alerts via webhook</div></div>'+
+    '</div>';
 }
 
 function renderLogsPage() {
-  const fakeLogs = [
-    { time:'10:42:01', level:'INFO',  msg:'[AUTH] Login success — user: 1 IP: 172.18.0.1' },
-    { time:'10:41:55', level:'WARN',  msg:'[AUTH] Failed login attempt for username: hacker IP: 192.168.1.10' },
-    { time:'10:40:33', level:'INFO',  msg:'[PRODUCTS] Created id:6 by user:1' },
-    { time:'10:39:12', level:'INFO',  msg:'[PRODUCTS] List fetched — user: 1 page: 1' },
-    { time:'10:38:44', level:'WARN',  msg:'[AUTH] Invalid token — IP: 10.0.0.5 Error: TokenExpiredError' },
-    { time:'10:37:20', level:'INFO',  msg:'[PRODUCTS] Updated id:3 by user:1' },
-    { time:'10:36:05', level:'ERROR', msg:'[ERROR] Connection ECONNREFUSED — mysql:3306' },
-    { time:'10:35:01', level:'INFO',  msg:'✅ Database connection established' },
-    { time:'10:35:00', level:'INFO',  msg:'🚀 Server running on port 3000' },
+  const logs=[
+    {time:'10:42:01',level:'INFO',msg:'[AUTH] Login success — user: 1 IP: 172.18.0.1'},
+    {time:'10:41:55',level:'WARN',msg:'[AUTH] Failed login attempt for username: hacker IP: 192.168.1.10'},
+    {time:'10:40:33',level:'INFO',msg:'[PRODUCTS] Created id:6 by user:1'},
+    {time:'10:39:12',level:'INFO',msg:'[PRODUCTS] List fetched — user: 1 page: 1'},
+    {time:'10:38:44',level:'WARN',msg:'[AUTH] Invalid token — IP: 10.0.0.5 Error: TokenExpiredError'},
+    {time:'10:37:20',level:'INFO',msg:'[PRODUCTS] Updated id:3 by user:1'},
+    {time:'10:36:05',level:'ERROR',msg:'[ERROR] Connection ECONNREFUSED — mysql:3306'},
+    {time:'10:35:01',level:'INFO',msg:'✅ Database connection established'},
+    {time:'10:35:00',level:'INFO',msg:'🚀 Server running on port 3000'},
   ];
-
-  const colors = { INFO:'badge-blue', WARN:'badge-yellow', ERROR:'badge-red' };
-  document.getElementById('logs-content').innerHTML = `
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Thời gian</th><th>Level</th><th>Message</th>
-        </tr></thead>
-        <tbody>
-          ${fakeLogs.map(l=>`<tr>
-            <td style="font-family:var(--mono);font-size:12px;color:var(--muted)">${l.time}</td>
-            <td><span class="badge ${colors[l.level]||'badge-blue'}">${l.level}</span></td>
-            <td style="font-family:var(--mono);font-size:12px">${l.msg}</td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:12px;font-size:12px;color:var(--muted)">
-      💡 Logs thực tế được lưu tại <code style="color:var(--accent)">/app/logs/app.log</code> và <code style="color:var(--accent)">/app/logs/error.log</code> trong container.<br>
-      Xem bằng lệnh: <code style="color:var(--accent)">docker compose logs -f app</code>
-    </div>`;
+  const colors={INFO:'badge-blue',WARN:'badge-yellow',ERROR:'badge-red'};
+  document.getElementById('logs-content').innerHTML=
+    '<div class="table-wrap"><table><thead><tr><th>Thời gian</th><th>Level</th><th>Message</th></tr></thead><tbody>'+
+    logs.map(l=>'<tr><td style="font-family:var(--mono);font-size:12px;color:var(--muted)">'+l.time+'</td><td><span class="badge '+(colors[l.level]||'badge-blue')+'">'+l.level+'</span></td><td style="font-family:var(--mono);font-size:12px">'+l.msg+'</td></tr>').join('')+
+    '</tbody></table></div>'+
+    '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:12px;font-size:12px;color:var(--muted)">'+
+    '💡 Xem logs thực tế: <code style="color:var(--accent)">docker compose logs -f app</code></div>';
 }
 
-// ════════════════════════════════════════════════════
-// HELPERS
-// ════════════════════════════════════════════════════
-function fmt(n) {
-  return new Intl.NumberFormat('vi-VN', { style:'currency', currency:'VND' }).format(n);
-}
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function toast(msg, type='success') {
-  const icons = { success:'✅', error:'❌', warn:'⚠️' };
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
-  document.getElementById('toasts').appendChild(el);
-  setTimeout(() => el.remove(), 3500);
-}
+// ── Event Listeners ──
+window.addEventListener('DOMContentLoaded', function() {
+  // Auth
+  document.getElementById('login-btn').addEventListener('click', login);
+  document.getElementById('auth-password').addEventListener('keydown', function(e) { if(e.key==='Enter') login(); });
+  document.getElementById('logout-btn').addEventListener('click', logout);
 
-// Modal close on backdrop click
-document.getElementById('product-modal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeModal();
+  // Nav
+  document.querySelectorAll('.nav-item[data-page]').forEach(function(el) {
+    el.addEventListener('click', function() { setPage(this.dataset.page); });
+  });
+
+  // Products
+  document.getElementById('btn-add-product').addEventListener('click', function() { openModal(); });
+  document.getElementById('btn-reload').addEventListener('click', function() { loadProducts(); });
+  document.getElementById('search-input').addEventListener('input', function() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function() { loadProducts(1); }, 300);
+  });
+  document.getElementById('cat-filter').addEventListener('change', function() { loadProducts(1); });
+
+  // Modal
+  document.getElementById('btn-close-modal').addEventListener('click', closeModal);
+  document.getElementById('btn-cancel-modal').addEventListener('click', closeModal);
+  document.getElementById('save-btn').addEventListener('click', saveProduct);
+  document.getElementById('product-modal').addEventListener('click', function(e) {
+    if (e.target===this) closeModal();
+  });
+
+  // Monitoring refresh
+  document.getElementById('btn-refresh-monitor').addEventListener('click', renderMonitoringPage);
+
+  // Render static pages
+  renderSecurityPage();
+  renderMonitoringPage();
+  renderLogsPage();
+
+  // Auto login nếu có token
+  if (token && currentUser) {
+    showApp();
+    loadProducts();
+  }
 });
 </script>
 </body>
