@@ -20,10 +20,14 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      scriptSrc: ["'self'"],
+      // ✅ Cho phép unsafe-inline để frontend SPA hoạt động
+      scriptSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
+      // ✅ Cho phép fetch API nội bộ
+      connectSrc: ["'self'"],
     },
   },
+  // ✅ HSTS: buộc dùng HTTPS trong 1 năm
   hsts: { maxAge: 31536000, includeSubDomains: true },
 }));
 
@@ -73,6 +77,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 // Routes
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', authRoutes);
+// ✅ SECURITY: Tất cả product routes yêu cầu JWT token
 app.use('/api/products', authenticateToken, productRoutes);
 
 // SPA fallback
