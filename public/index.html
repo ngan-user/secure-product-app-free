@@ -339,7 +339,8 @@ async function loadProducts(page=1) {
   const search = document.getElementById('search-input').value||'';
   const cat = document.getElementById('cat-filter').value||'';
   const params = new URLSearchParams({page,limit:8});
-  if (search) params.set('search',search);
+  if (search) params.set('search', search);
+  else if (cat) params.set('search', cat);
   const res = await apiCall('/products?'+params);
   if (!res) return;
   const data = await res.json();
@@ -486,12 +487,51 @@ function renderSecurityPage() {
   ).join('');
 }
 
-function renderMonitoringPage() {
+async function renderMonitoringPage() {
+  // Lấy health check thực tế từ API
+  let healthStatus = '...';
+  let dbStatus = '...';
+  let uptime = '...';
+  try {
+    const res = await fetch('/api/health/detailed');
+    if (res.ok) {
+      const h = await res.json();
+      healthStatus = h.status === 'healthy' ? '🟢 Healthy' : '🔴 Unhealthy';
+      dbStatus = h.database === 'connected' ? '🟢 Connected' : '🔴 Disconnected';
+      uptime = Math.floor(h.uptime) + 's';
+    }
+  } catch(e) { healthStatus = '🔴 Error'; }
+
+  const alerts = [
+    ['AppDown','up{job="nodejs-app"} == 0 for 1m','🔴 Critical'],
+    ['HighCPUUsage','CPU > 80% for 5m','🟡 Warning'],
+    ['HighMemoryUsage','Memory > 200MB for 5m','🟡 Warning'],
+    ['HighErrorRate','5xx rate > 10% for 2m','🔴 Critical'],
+    ['SlowResponseTime','p95 latency > 2s for 5m','🟡 Warning'],
+    ['DBDown','db_up == 0 for 1m','🔴 Critical'],
+    ['TooManyConnections','connections > 80','🟡 Warning'],
+  ];
+
   document.getElementById('monitoring-content').innerHTML=
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">'+
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">App Status</div><div style="font-size:18px;font-weight:700">'+healthStatus+'</div></div>'+
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Database</div><div style="font-size:18px;font-weight:700">'+dbStatus+'</div></div>'+
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Uptime</div><div style="font-size:18px;font-weight:700;font-family:var(--mono)">'+uptime+'</div></div>'+
+    '</div>'+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">'+
-    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px"><div style="font-weight:700;margin-bottom:4px">📡 Prometheus</div><div style="color:var(--muted);font-size:13px;margin-bottom:12px">Metrics collection & alerting</div><div class="badge badge-green" style="margin-bottom:12px">● Running on :9090</div><div style="font-size:12px;color:var(--muted);line-height:1.8">• scrape_interval: 15s<br>• Jobs: nodejs-app, nginx, mysql<br>• Alert rules: 7 rules<br>• Retention: 15 days</div></div>'+
-    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px"><div style="font-weight:700;margin-bottom:4px">📊 Grafana</div><div style="color:var(--muted);font-size:13px;margin-bottom:12px">Visualization dashboard</div><div class="badge badge-green" style="margin-bottom:12px">● Running on /grafana</div><div style="font-size:12px;color:var(--muted);line-height:1.8">• Anonymous login: disabled<br>• Data source: Prometheus<br>• Dashboards: App + MySQL<br>• Alerts via webhook</div></div>'+
-    '</div>';
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px"><div style="font-weight:700;margin-bottom:4px">📡 Prometheus</div><div style="color:var(--muted);font-size:13px;margin-bottom:12px">Metrics collection & alerting</div><div class="badge badge-green" style="margin-bottom:12px">● Configured</div><div style="font-size:12px;color:var(--muted);line-height:1.8">• scrape_interval: 15s<br>• Jobs: nodejs-app, nginx, mysql<br>• Alert rules: 7 rules<br>• Retention: 15 days</div></div>'+
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px"><div style="font-weight:700;margin-bottom:4px">📊 Grafana</div><div style="color:var(--muted);font-size:13px;margin-bottom:12px">Visualization dashboard</div><div class="badge badge-green" style="margin-bottom:12px">● Configured</div><div style="font-size:12px;color:var(--muted);line-height:1.8">• Anonymous login: disabled<br>• Data source: Prometheus<br>• Alert rules: 7<br>• Alerts via webhook</div></div>'+
+    '</div>'+
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px">'+
+    '<div style="font-weight:700;margin-bottom:16px">🚨 Alert Rules ('+alerts.length+')</div>'+
+    '<table style="width:100%;border-collapse:collapse">'+
+    '<thead><tr>'+
+    '<th style="text-align:left;padding:8px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">Alert</th>'+
+    '<th style="text-align:left;padding:8px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">Điều kiện</th>'+
+    '<th style="text-align:left;padding:8px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)">Severity</th>'+
+    '</tr></thead><tbody>'+
+    alerts.map(function(a){return '<tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 8px;font-weight:600;font-size:13px">'+a[0]+'</td><td style="padding:10px 8px;font-size:12px;font-family:var(--mono);color:var(--muted)">'+a[1]+'</td><td style="padding:10px 8px;font-size:12px">'+a[2]+'</td></tr>';}).join('')+
+    '</tbody></table></div>';
 }
 
 function renderLogsPage() {
