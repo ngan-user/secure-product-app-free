@@ -257,8 +257,8 @@
         <label>Mật khẩu</label>
         <input type="password" id="auth-password" placeholder="••••••••" value="Admin@12345">
       </div>
-      <button class="btn btn-primary auth-btn" id="login-btn" onclick="login()">
-        <span id="login-text">Đăng nhập</span>
+      <button class="btn btn-primary auth-btn" id="login-btn">
+      <span id="login-text">Đăng nhập</span>
       </button>
     </div>
     <div class="auth-hint">Demo: <span>admin</span> / <span>Admin@12345</span></div>
@@ -547,6 +547,7 @@ window.addEventListener('DOMContentLoaded', () => {
     loadProducts();
   }
   // Enter key for login
+  document.getElementById('login-btn').addEventListener('click', login);
   document.getElementById('auth-password').addEventListener('keydown', e => { if(e.key==='Enter') login(); });
   renderSecurityPage();
   renderMonitoringPage();
